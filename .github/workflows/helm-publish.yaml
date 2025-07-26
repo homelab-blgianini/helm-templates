@@ -1,4 +1,4 @@
-name: Release Helm Charts
+name: Publish Helm Chart OCI
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
       - 'templates/**'
 
 jobs:
-  release:
+  publish:
     runs-on: ubuntu-latest
 
     steps:
@@ -20,18 +20,18 @@ jobs:
         with:
           version: v3.14.0
 
-      - name: Package Helm charts
+      - name: Login no Docker Hub
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         run: |
-          mkdir -p packaged
-          helm package ./ --destination packaged
+          echo $DOCKER_PASSWORD | helm registry login -u $DOCKER_USERNAME --password-stdin docker.io
 
-      - name: Generate Helm index
+      - name: Package Helm chart
         run: |
-          helm repo index packaged --url https:/homelab-blgianini.github.io/helm-templates
+          helm package ./ -d packaged
 
-      - name: Push to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./packaged
-          publish_branch: gh-pages
+      - name: Push Helm chart como imagem OCI
+        run: |
+          CHART_REF="docker.io/${{ secrets.DOCKER_USERNAME }}/helm-chart:0.1.0"
+          helm push packaged/helm-chart-0.1.0.tgz oci://$CHART_REF

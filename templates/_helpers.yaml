@@ -6,3 +6,4 @@
 {{ .Release.Name }}-{{ .Chart.Name }}
 {{- end }}
 
+
