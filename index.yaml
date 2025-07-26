@@ -1,0 +1,14 @@
+apiVersion: v1
+entries:
+  helm-template:
+  - apiVersion: v2
+    appVersion: 0.0.1
+    created: "2025-07-26T06:37:34.781799143Z"
+    description: Templates do helm
+    digest: ea47df185de1cb3ff8aea1a08c7d4f11e2c47210c983a8386f4ffdaac65c23b7
+    name: helm-template
+    type: application
+    urls:
+    - https:/homelab-blgianini.github.io/helm-templates/helm-template-0.0.1.tgz
+    version: 0.0.1
+generated: "2025-07-26T06:37:34.781148512Z"

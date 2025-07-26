@@ -1,8 +1,0 @@
-{{- define "meuchart.name" -}}
-{{ .Chart.Name }}
-{{- end }}
-
-{{- define "meuchart.fullname" -}}
-{{ .Release.Name }}-{{ .Chart.Name }}
-{{- end }}
-
