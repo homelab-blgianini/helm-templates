@@ -22,7 +22,7 @@ jobs:
 
       - name: Package Helm chart
         run: |
-            helm package charts/meuchart --destination packaged
+            helm package ./ --destination packaged
 
       - name: Login no DockerHub Registry (OCI)
         env:
