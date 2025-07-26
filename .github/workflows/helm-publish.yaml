@@ -20,34 +20,18 @@ jobs:
         with:
           version: v3.14.0
 
-      - name: Package Helm Chart
+      - name: Package Helm chart
         run: |
-          helm package ./ --destination packaged
-          echo "PACKAGE_NAME=$(ls packaged | grep .tgz)" >> $GITHUB_ENV
+            helm package charts/meuchart --destination packaged
 
-      - name: Show packaged chart
-        run: |
-          echo "Helm package created: $PACKAGE_NAME"
-
-      - name: Set org variable (requires PAT with org:admin scope)
+      - name: Login no DockerHub Registry (OCI)
         env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
-          ORG: homelab-blgianini
+            HELM_REGISTRY_USERNAME: ${{ secrets.DOCKERHUB_USER }}
+            HELM_REGISTRY_PASSWORD: ${{ secrets.DOCKERHUB_PASS }}
         run: |
-          curl -X PATCH \
-            -H "Authorization: Bearer $GH_TOKEN" \
-            -H "Accept: application/vnd.github+json" \
-            https://api.github.com/orgs/$ORG/actions/variables/HELM_PACKAGE_NAME \
-            -d "{\"name\":\"HELM_PACKAGE_NAME\",\"value\":\"$PACKAGE_NAME\"}"
+            echo "$HELM_REGISTRY_PASSWORD" | helm registry login registry-1.docker.io --username "$HELM_REGISTRY_USERNAME" --password-stdin
 
-      - name: (Opcional) Login no Docker Hub
-        env:
-          DOCKER_USER: ${{ secrets.DOCKERHUB_USER }}
-          DOCKER_PASS: ${{ secrets.DOCKERHUB_PASS }}
+      - name: Push Helm Chart para DockerHub
         run: |
-          echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-
-      - name: (Opcional) Simular publicação no Docker Hub
-        if: false
-        run: |
-          echo "Publicando $PACKAGE_NAME no Docker Hub... (simulado)"
+            CHART_FILE=$(ls packaged/*.tgz)
+            helm push "$CHART_FILE" oci://registry-1.docker.io/${{ secrets.DOCKERHUB_USER }}/helm-charts
