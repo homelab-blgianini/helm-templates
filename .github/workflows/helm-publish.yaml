@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'charts/**'
+      - 'templates/**'
 
 jobs:
   package-helm:
@@ -32,7 +32,7 @@ jobs:
       - name: Set org variable (requires PAT with org:admin scope)
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
-          ORG: sua-org # <-- Troque pelo nome da sua organização
+          ORG: homelab-blgianini
         run: |
           curl -X PATCH \
             -H "Authorization: Bearer $GH_TOKEN" \
@@ -41,7 +41,6 @@ jobs:
             -d "{\"name\":\"HELM_PACKAGE_NAME\",\"value\":\"$PACKAGE_NAME\"}"
 
       - name: (Opcional) Login no Docker Hub
-        if: false # coloque "true" se quiser usar
         env:
           DOCKER_USER: ${{ secrets.DOCKERHUB_USER }}
           DOCKER_PASS: ${{ secrets.DOCKERHUB_PASS }}
