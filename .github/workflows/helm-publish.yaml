@@ -22,8 +22,11 @@ jobs:
       - name: Log in to Docker Hub
         run: echo "${{ secrets.DOCKERHUB_PASS }}" | docker login -u "${{ secrets.DOCKERHUB_USER }}" --password-stdin
 
+      - name: Generate version from date
+        run: echo "VERSION=0.1.$(date +%s)" >> $GITHUB_ENV
+
       - name: Package Helm chart
-        run: helm package ./ --version ${{ github.sha }}
+        run: helm package ./ --version $VERSION
 
       - name: Push Helm chart to registry
         run: helm push my-chart-${{ github.sha }}.tgz oci://docker.io/blgianini/helm-charts
