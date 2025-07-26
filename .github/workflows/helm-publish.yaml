@@ -34,4 +34,4 @@ jobs:
       - name: Push Helm chart como imagem OCI
         run: |
           CHART_REF="docker.io/${{ secrets.DOCKER_USERNAME }}/helm-chart:0.1.0"
-          helm push packaged/helm-chart-0.1.0.tgz oci://$CHART_REF
+          helm push packaged/helm-template-0.1.0.tgz oci://$CHART_REF
