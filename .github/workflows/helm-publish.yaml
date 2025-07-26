@@ -1,4 +1,4 @@
-name: Package Helm and Set Org Var
+name: Package Helm and Push to DockerHub
 
 on:
   push:
@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - 'templates/**'
+      - 'Chart.yaml'
 
 jobs:
   package-helm:
@@ -22,16 +23,16 @@ jobs:
 
       - name: Package Helm chart
         run: |
-            helm package ./ --destination packaged
+          helm package ./ --destination packaged
 
-      - name: Login no DockerHub Registry (OCI)
+      - name: Login to DockerHub Helm Registry
         env:
-            HELM_REGISTRY_USERNAME: ${{ secrets.DOCKERHUB_USER }}
-            HELM_REGISTRY_PASSWORD: ${{ secrets.DOCKERHUB_PASS }}
+          HELM_REGISTRY_USERNAME: ${{ secrets.DOCKERHUB_USER }}
+          HELM_REGISTRY_PASSWORD: ${{ secrets.DOCKERHUB_PASS }}
         run: |
-            echo "$HELM_REGISTRY_PASSWORD" | helm registry login registry-1.docker.io --username "$HELM_REGISTRY_USERNAME" --password-stdin
+          echo "$HELM_REGISTRY_PASSWORD" | helm registry login registry-1.docker.io --username "$HELM_REGISTRY_USERNAME" --password-stdin
 
-      - name: Push Helm Chart para DockerHub
+      - name: Push Helm chart to DockerHub
         run: |
-            CHART_FILE=$(ls packaged/*.tgz)
-            helm push "$CHART_FILE" oci://registry-1.docker.io/${{ secrets.DOCKERHUB_USER }}/helm-charts
+          CHART_FILE=$(ls packaged/*.tgz)
+          helm push "$CHART_FILE" oci://registry-1.docker.io/blgianini/helm-charts
