@@ -1,0 +1,54 @@
+name: Package Helm and Set Org Var
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'charts/**'
+
+jobs:
+  package-helm:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: v3.14.0
+
+      - name: Package Helm Chart
+        run: |
+          helm package charts/meuchart --destination packaged
+          echo "PACKAGE_NAME=$(ls packaged | grep .tgz)" >> $GITHUB_ENV
+
+      - name: Show packaged chart
+        run: |
+          echo "Helm package created: $PACKAGE_NAME"
+
+      - name: Set org variable (requires PAT with org:admin scope)
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          ORG: sua-org # <-- Troque pelo nome da sua organização
+        run: |
+          curl -X PATCH \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/orgs/$ORG/actions/variables/HELM_PACKAGE_NAME \
+            -d "{\"name\":\"HELM_PACKAGE_NAME\",\"value\":\"$PACKAGE_NAME\"}"
+
+      - name: (Opcional) Login no Docker Hub
+        if: false # coloque "true" se quiser usar
+        env:
+          DOCKER_USER: ${{ secrets.DOCKERHUB_USER }}
+          DOCKER_PASS: ${{ secrets.DOCKERHUB_PASS }}
+        run: |
+          echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+
+      - name: (Opcional) Simular publicação no Docker Hub
+        if: false
+        run: |
+          echo "Publicando $PACKAGE_NAME no Docker Hub... (simulado)"
