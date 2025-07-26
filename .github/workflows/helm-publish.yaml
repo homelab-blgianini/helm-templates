@@ -29,4 +29,4 @@ jobs:
         run: helm package ./ --version $VERSION
 
       - name: Push Helm chart to registry
-        run: helm push my-chart-${{ github.sha }}.tgz oci://docker.io/blgianini/helm-charts
+        run: helm push helm-template-$VERSION.tgz oci://docker.io/blgianini/helm-charts
