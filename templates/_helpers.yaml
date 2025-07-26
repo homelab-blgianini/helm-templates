@@ -5,4 +5,3 @@
 {{- define "meuchart.fullname" -}}
 {{ .Release.Name }}-{{ .Chart.Name }}
 {{- end }}
-
