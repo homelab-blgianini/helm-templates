@@ -22,8 +22,8 @@ jobs:
 
       - name: Login no Docker Hub
         env:
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+          DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USER }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKERHUB_PASS }}
         run: |
           echo $DOCKER_PASSWORD | helm registry login -u $DOCKER_USERNAME --password-stdin docker.io
 
