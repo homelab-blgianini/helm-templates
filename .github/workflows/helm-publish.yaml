@@ -20,7 +20,7 @@ jobs:
           version: v3.14.0 # Specify your desired Helm version
 
       - name: Log in to Docker Hub
-        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+        run: echo "${{ secrets.DOCKERHUB_PASS }}" | docker login -u "${{ secrets.DOCKERHUB_USER }}" --password-stdin
 
       - name: Package Helm chart
         run: helm package ./ --version ${{ github.sha }}
