@@ -1,18 +1,18 @@
-name: Publish Helm Chart to GitHub Pages
+name: Release Helm Charts
 
 on:
   push:
     branches:
       - main
     paths:
-      - 'templates/**' # Ou seu caminho do chart
+      - 'charts/**'
 
 jobs:
   release:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout source
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Set up Helm
@@ -20,21 +20,18 @@ jobs:
         with:
           version: v3.14.0
 
-      - name: Set version
-        run: echo "VERSION=0.1.$(date +%s)" >> $GITHUB_ENV
-
-      - name: Package chart
+      - name: Package Helm charts
         run: |
-          mkdir -p docs
-          helm package ./ --version $VERSION -d docs
+          mkdir -p packaged
+          helm package ./ --destination packaged
 
       - name: Generate Helm index
         run: |
-          helm repo index docs --url https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
+          helm repo index packaged --url https:/homelab-blgianini.github.io/helm-templates
 
-      - name: Publish to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Push to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: docs
-          publish_branch: main
+          publish_dir: ./packaged
+          publish_branch: gh-pages
