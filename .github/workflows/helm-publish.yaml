@@ -22,7 +22,7 @@ jobs:
 
       - name: Package Helm Chart
         run: |
-          helm package templates/ --destination packaged
+          helm package ./ --destination packaged
           echo "PACKAGE_NAME=$(ls packaged | grep .tgz)" >> $GITHUB_ENV
 
       - name: Show packaged chart
