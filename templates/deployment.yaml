@@ -1,18 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "meuchart.fullname" . }}
+  name: {{ .Chart.Name }}
   labels:
-    app: {{ include "meuchart.name" . }}
+    app: {{ .Chart.Name }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ include "meuchart.name" . }}
+      app: {{ .Chart.Name }}
   template:
     metadata:
       labels:
-        app: {{ include "meuchart.name" . }}
+        app: {{ .Chart.Name }}
     spec:
       containers:
         - name: {{ .Chart.Name }}
@@ -20,4 +20,3 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: {{ .Values.containerPort }}
-          resources: {{- toYaml .Values.resources | nindent 12 }}
